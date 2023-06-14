@@ -1,4 +1,9 @@
 import streamlit as st
+import csv
+import webbrowser
+
+# Hide pages name on the left sidebar
+st.set_page_config(initial_sidebar_state='collapsed')
 
 def create_footer():
     st.markdown(
@@ -32,32 +37,36 @@ def main():
     password = st.text_input("Password")
     if st.button("Submit"):
         # Perform registration logic here
-        registered = True
+        registered = register_user(name, email, password)
+        # Open the "Accueil" page in the default web browser
+        url = "http://localhost:8501/Connexion"
+        webbrowser.open_new_tab(url)
     else:
         registered = False
 
-    # Only show the content if the user is registered
-    if registered:
-        st.header("Welcome, " + name + "!")
-        st.write("This is the hidden content for registered users.")
-    else:
-        st.warning("Please register to access the content.")
 
-# Function to check if the user is subscribed
-def is_user_subscribed():
-    # Add your logic here to check the user's subscription status
-    return True  # Placeholder logic
+# Function to register a new user
+def register_user(name, email, password):
+    # Check if the user already exists in the CSV file
+    if is_user_existing(email):
+        st.warning("User with the same email already exists.")
+        return False
 
-# Decorator to restrict access to a page
-def restricted_access():
-    def decorator(func):
-        def wrapper():
-            if not is_user_subscribed():
-                st.error("Access denied. Please subscribe to access this page.")
-            else:
-                func()
-        return wrapper
-    return decorator
+    # Write the new user information to the CSV file
+    with open("/home/amal/Documents/Master 2/Projet de synthèse/interface-web/dataset/users.csv", "a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([name, email, password])
+
+    return True
+    
+# Function to check if the user already exists in the CSV file
+def is_user_existing(email):
+    with open("/home/amal/Documents/Master 2/Projet de synthèse/interface-web/dataset/users.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[1] == email:
+                return True
+    return False
     
     
 # Call the function to create the footer
