@@ -4,9 +4,9 @@ from PIL import Image
 import requests
 
 
-def process_submit(text, image):
+def process_submit(image):
     url = "https://webhook.site/1eda8b10-2f28-43cd-94ab-e99db2bb3109"
-    myobj = {'text': text, 'encoded_image': image}
+    myobj = {'encoded_image': image}
 
     response = requests.post(url, json = myobj)
     return response
@@ -34,8 +34,6 @@ def create_footer():
     )
     
 
-text = st.text_area("Enter some text", height=200)
-
 uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 if uploaded_file is not None:
     # Read the contents of the uploaded file
@@ -50,7 +48,8 @@ submitted = st.button("Submit")
 
 if submitted:
     st.write("Submit button was clicked!")
-    process_submit(text, encoded_file)
+    # st.write(encoded_file)
+    process_submit(encoded_file)
 
 
 # Call the function to create the footer
